@@ -22,11 +22,11 @@ public class Menu extends AppCompatActivity {
         nama=(TextView)findViewById(R.id.txtnama);
         email=(TextView)findViewById(R.id.txtemail);
         logo=(ImageView)findViewById(R.id.ivgambar);
-
+        //get shared preference
         SharedPreferences mSettings = getApplicationContext().getSharedPreferences("Settings", Context.MODE_PRIVATE);
         String cookieName = mSettings.getString("datanama", "datanama");
         String cookieEmail = mSettings.getString("dataemail", "dataemail");
-
+        //set to UI
         nama.setText(cookieName);
         email.setText(cookieEmail);
 
