@@ -19,6 +19,8 @@ import android.widget.Toast;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
@@ -30,6 +32,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -54,7 +59,33 @@ public class MainActivity extends AppCompatActivity {
                 new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
+                        GraphRequest graphRequest = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
+                            @Override
+                            public void onCompleted(JSONObject object, GraphResponse response) {
+                                String userDetil = response.getRawResponse();
+                                try {
+                                    JSONObject jsonObject = new JSONObject(userDetil);
+                                    String fbId = jsonObject.getString("id");
+                                    String datanama = jsonObject.optString("name", "");
+                                    //String username = jsonObject.optString("first_name", "") + jsonObject.optString("last_name", "") + jsonObject.getString("id");
+                                    String dataemail = jsonObject.optString("email", "");
+                                    String avatar = "https://graph.facebook.com/" + fbId + "/picture?type=large";
+                                    Log.d("gambar", "onCompleted: "+avatar);
 
+                                    //save to share preference
+                                    SharedPreferences mSettings = getApplicationContext().getSharedPreferences("Settings", Context.MODE_PRIVATE);
+                                    SharedPreferences.Editor editor = mSettings.edit();
+                                    editor.putString("dataemail", dataemail);
+                                    editor.putString("datanama", datanama);
+                                    editor.apply();
+
+                                    Intent in =new Intent(getApplicationContext(), Menu.class);
+                                    startActivity(in);
+
+                                } catch (JSONException ignored) {
+                                }
+                            }
+                        });
                     }
 
                     @Override
@@ -124,12 +155,18 @@ public class MainActivity extends AppCompatActivity {
             String dataemail=account.getEmail();
             String datanama=account.getDisplayName();
             Toast.makeText(getApplicationContext(),"email : "+dataemail,Toast.LENGTH_LONG).show();
-
+            String datagambar;
+            if (account.getPhotoUrl() != null) {
+                datagambar = account.getPhotoUrl().toString();
+            } else {
+                datagambar = "avatar";
+            }
             //save to share preference
             SharedPreferences mSettings = getApplicationContext().getSharedPreferences("Settings", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = mSettings.edit();
             editor.putString("dataemail", dataemail);
             editor.putString("datanama", datanama);
+            editor.putString("datagambar", datagambar);
             editor.apply();
 
             Intent in =new Intent(getApplicationContext(), Menu.class);

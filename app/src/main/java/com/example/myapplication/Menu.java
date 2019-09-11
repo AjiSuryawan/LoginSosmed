@@ -19,16 +19,22 @@ public class Menu extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
-        nama=(TextView)findViewById(R.id.txtnama);
-        email=(TextView)findViewById(R.id.txtemail);
-        logo=(ImageView)findViewById(R.id.ivgambar);
+        nama = (TextView) findViewById(R.id.txtnama);
+        email = (TextView) findViewById(R.id.txtemail);
+        logo = (ImageView) findViewById(R.id.ivgambar);
         //get shared preference
         SharedPreferences mSettings = getApplicationContext().getSharedPreferences("Settings", Context.MODE_PRIVATE);
         String cookieName = mSettings.getString("datanama", "datanama");
         String cookieEmail = mSettings.getString("dataemail", "dataemail");
+        String cookiegambar = mSettings.getString("datagambar", "datagambar");
         //set to UI
         nama.setText(cookieName);
         email.setText(cookieEmail);
+        Glide.with(getApplicationContext())
+                .load(cookiegambar)
+                .centerCrop()
+                .placeholder(R.mipmap.ic_launcher)
+                .into(logo);
 
     }
 }
