@@ -52,9 +52,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         loginButton = (LoginButton) findViewById(R.id.login_button);
         loginButton.setReadPermissions(Arrays.asList(EMAIL));
-
         callbackManager = CallbackManager.Factory.create();
-
         LoginManager.getInstance().registerCallback(callbackManager,
                 new FacebookCallback<LoginResult>() {
                     @Override
@@ -69,23 +67,30 @@ public class MainActivity extends AppCompatActivity {
                                     String datanama = jsonObject.optString("name", "");
                                     //String username = jsonObject.optString("first_name", "") + jsonObject.optString("last_name", "") + jsonObject.getString("id");
                                     String dataemail = jsonObject.optString("email", "");
-                                    String avatar = "https://graph.facebook.com/" + fbId + "/picture?type=large";
-                                    Log.d("gambar", "onCompleted: "+avatar);
+                                    String datagambar = "https://graph.facebook.com/" + fbId + "/picture?type=large";
+                                    Log.d("gambar", "onCompleted: "+datagambar);
 
                                     //save to share preference
                                     SharedPreferences mSettings = getApplicationContext().getSharedPreferences("Settings", Context.MODE_PRIVATE);
                                     SharedPreferences.Editor editor = mSettings.edit();
                                     editor.putString("dataemail", dataemail);
                                     editor.putString("datanama", datanama);
+                                    editor.putString("datagambar", datagambar);
                                     editor.apply();
 
                                     Intent in =new Intent(getApplicationContext(), Menu.class);
+                                    Toast.makeText(getApplicationContext(),"makanan",Toast.LENGTH_LONG).show();
                                     startActivity(in);
 
                                 } catch (JSONException ignored) {
+                                    Toast.makeText(getApplicationContext(), "error : "+ignored.toString(),Toast.LENGTH_LONG).show();
                                 }
                             }
                         });
+                        Bundle parameters = new Bundle();
+                        parameters.putString("fields", "name,email");
+                        graphRequest.setParameters(parameters);
+                        graphRequest.executeAsync();
                     }
 
                     @Override
@@ -127,7 +132,6 @@ public class MainActivity extends AppCompatActivity {
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 Intent signInIntent = mGoogleSignInClient.getSignInIntent();
                 startActivityForResult(signInIntent, 1);
             }
@@ -136,10 +140,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
         callbackManager.onActivityResult(requestCode, resultCode, data);
-
+        super.onActivityResult(requestCode, resultCode, data);
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
         if (requestCode == 1) {
             // The Task returned from this call is always completed, no need to attach
