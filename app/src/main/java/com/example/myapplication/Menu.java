@@ -5,10 +5,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class Menu extends AppCompatActivity {
     TextView nama;
@@ -27,6 +30,7 @@ public class Menu extends AppCompatActivity {
         String cookieName = mSettings.getString("datanama", "datanama");
         String cookieEmail = mSettings.getString("dataemail", "dataemail");
         String cookiegambar = mSettings.getString("datagambar", "datagambar");
+        Log.d("datagambar", "onCreate: "+cookiegambar);
         //set to UI
         nama.setText(cookieName);
         email.setText(cookieEmail);
